@@ -110,3 +110,13 @@
 .signup {
   border: none;
 }
+.wishlist {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.icons-wishlist {
+  font-size: 25px;
+}

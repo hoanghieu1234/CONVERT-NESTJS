@@ -36,7 +36,7 @@ export class User extends Document {
   })
   cart: { productId: Types.ObjectId; quantity: number }[];
 
-  @Prop()
+  @Prop({ default: '' })
   address: string;
 
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Product' }] })

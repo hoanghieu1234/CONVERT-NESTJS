@@ -51,7 +51,7 @@
 
 .custom-icon {
   font-size: 25px;
-  margin-right: 5px ;
+  margin-right: 5px;
 }
 
 .cart-items {
@@ -61,3 +61,21 @@
 .custom-decoration {
   text-decoration: none !important;
 }
+
+.active-nav {
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  color: #febd68 !important;
+  text-decoration: none !important;
+}
+
+@media (max-width: 767px) {
+  .header-top-strip {
+    padding: 10px;
+  }
+  .col-2 {
+    display: flex;
+  }
+}
+
+

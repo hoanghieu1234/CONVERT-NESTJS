@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
-@Schema({ collection: 'payments' }) // Tên collection trong MongoDB
+@Schema({ collection: 'payments', timestamps: true }) // Tên collection trong MongoDB
 export class Payment extends Document {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   idUser: Types.ObjectId;

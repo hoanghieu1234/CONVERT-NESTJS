@@ -9,7 +9,7 @@ export interface Product {
   
 export interface ProductCardProps {
     grid: number;
-    comment: Comment[]; 
+    // comment: Comment[]; 
 }
 
 export interface SpecialProductProps {

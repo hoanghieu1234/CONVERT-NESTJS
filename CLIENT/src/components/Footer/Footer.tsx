@@ -11,8 +11,8 @@ const Footer: React.FC = () => {
           <div className="row align-items-center">
             <div className="col-5">
               <div className="footer-top-data d-flex align-items-center gap-30">
-                <img src="images/newsletter.png" alt="newletter" />
-                <h2 className="text-while mb-0">Sign Up For Newsletter</h2>
+                {/* <img src="images/newsletter.png" alt="newletter" className="w-auto"/> */}
+                <h5 className="text-while mb-0 ">Sign Up For Newsletter</h5>
               </div>
             </div>
             <div className="col-7">
@@ -130,7 +130,7 @@ const Footer: React.FC = () => {
           <div className="row">
             <div className="col-12">
               <p className="text-center mb-0 text-while">
-                &copy; {new Date().getFullYear()}; Powered By Nguyễn Hoàng Hiếu
+                &copy; {new Date().getFullYear()} Powered By Nguyễn Hoàng Hiếu
               </p>
             </div>
           </div>

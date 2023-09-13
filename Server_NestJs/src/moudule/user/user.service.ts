@@ -1,3 +1,4 @@
+import { UserModule } from './user.module';
 import {
   ForbiddenException,
   Injectable,
@@ -5,7 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { User } from './user.entity';
 import { UserDTO } from './user.dto';
 import * as bcrypt from 'bcrypt';
@@ -13,12 +14,15 @@ import * as jwt from 'jsonwebtoken';
 import { Request, Response } from 'express';
 import * as crypto from 'crypto';
 import { sendEmail } from '../../../utils/mailer.utils';
+import { Product } from '../product/product.entity';
 require('dotenv').config();
 
 @Injectable()
 export class UserService {
   private refreshTokenArr: string[] = [];
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>, // @InjectModel(Product.name) private productModel: Model<Product>,
+  ) {}
 
   async findAll(): Promise<User[]> {
     return this.userModel.find().exec();
@@ -31,7 +35,7 @@ export class UserService {
   async registerUser(user: UserDTO, res: Response): Promise<any> {
     const { firstname, lastname, email, mobile, password } = user;
     try {
-      const existingUser = await this.userModel.findOne({email});
+      const existingUser = await this.userModel.findOne({ email });
       console.log(existingUser, 567);
 
       if (existingUser) {
@@ -65,7 +69,6 @@ export class UserService {
       const user = await this.userModel
         .findOne({ email: credentials.email })
         .exec();
-      console.log(user, 999);
       if (user) {
         const isPasswordMatched = await bcrypt.compare(
           credentials.password,
@@ -76,7 +79,7 @@ export class UserService {
             { email: user.email },
             process.env.SECRET_KEY,
             {
-              expiresIn: '60s',
+              expiresIn: '1d',
             },
           );
           const refreshToken = jwt.sign(
@@ -160,8 +163,8 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
   }
-  // block user 
-  async blockUser(id: string, body:any) {
+  // block user
+  async blockUser(id: string, body: any) {
     const { isBlocked } = body;
 
     try {
@@ -200,12 +203,12 @@ export class UserService {
   }
   // Logout user
   async logoutUser(req: Request, res: Response): Promise<void> {
-    console.log('da vao')
+    console.log('da vao');
     res.clearCookie('refreshToken');
     this.refreshTokenArr = this.refreshTokenArr.filter(
       (token) => token !== req.cookies.refreshToken,
     );
-    console.log(this.refreshToken, 'refresh token')
+    console.log(this.refreshToken, 'refresh token');
     res.status(200).json({ msg: 'Logout successful' });
   }
 
@@ -347,5 +350,144 @@ export class UserService {
       },
     );
     return;
+  }
+
+  // CHANGE PROFILE
+  async changeProfile(res: Response, body: any, param: any) {
+    const userId = new Types.ObjectId(param);
+
+    try {
+      // Lấy thông tin người dùng từ cơ sở dữ liệu
+      const user = await this.userModel.findById(userId);
+
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Kiểm tra xem người dùng đã cung cấp mật khẩu cũ và mật khẩu mới
+      if (body.oldPassword && body.newPassword) {
+        // Kiểm tra xem mật khẩu cũ có khớp với mật khẩu hiện tại của người dùng không
+        const isPasswordMatched = await bcrypt.compare(
+          body.oldPassword,
+          user.password,
+        );
+
+        if (!isPasswordMatched) {
+          return res
+            .status(400)
+            .json({ message: 'Old password does not match' });
+        }
+
+        // Mã hoá mật khẩu mới
+        const hashedPassword = await bcrypt.hash(body.newPassword, 10);
+
+        // Cập nhật mật khẩu mới
+        user.password = hashedPassword;
+      }
+
+      if (body.firstname) {
+        user.firstname = body.firstname;
+      }
+      if (body.lastname) {
+        user.lastname = body.lastname;
+      }
+      if (body.mobile) {
+        user.mobile = body.mobile;
+      }
+
+      // Sử dụng findByIdAndUpdate để cập nhật thông tin người dùng và trả về bản ghi đã được cập nhật
+      const updatedUser = await this.userModel.findByIdAndUpdate(userId, user, {
+        new: true,
+        runValidators: true,
+      });
+      console.log(updatedUser, 'updated user');
+
+      return res.status(200).json(updatedUser);
+    } catch (error) {
+      console.error('Error:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // ADD WISHLIST
+  async addWishlist(
+    productId: string,
+    email: any,
+    res: Response,
+  ): Promise<any> {
+    try {
+      const idProductConvert = new Types.ObjectId(productId);
+      const user = await this.userModel
+        .findOne({ email: email })
+        .populate('wishlist')
+        .exec();
+      if (!user) {
+        return res.status(404).json({ msg: 'User not found' });
+      }
+
+      const data = user.wishlist.find(
+        (item) => item._id.toString() == idProductConvert.toString(),
+      );
+      let checkFavoriteProduct: any;
+      if (data) {
+        checkFavoriteProduct = user.wishlist.filter((item) => {
+          return item._id.toString() !== idProductConvert.toString();
+        });
+      } else {
+        user.wishlist.push(idProductConvert);
+        await user.save();
+        return res.status(200).json({ msg: 'Update success' });
+      }
+      console.log(checkFavoriteProduct, 'ok');
+
+      user.wishlist = checkFavoriteProduct;
+      await user.save();
+
+      return res.status(200).json({ msg: 'delete success' });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ msg: 'Internal Server Error' });
+    }
+  }
+
+  // GET-WISHLIST
+  async getWishlist(idUser: any, res: Response): Promise<void> {
+    try {
+      const idUserConvert = new Types.ObjectId(idUser.idUser);
+      const user = await this.userModel
+        .findById(idUserConvert)
+        .populate('wishlist')
+        .exec();
+      if (!user) {
+        res.status(404).json({ msg: 'User not found' });
+      }
+
+      const wishlist: Product[] = user.wishlist.map((item: any) =>
+        item.toObject(),
+      );
+
+      res.status(200).json(wishlist);
+    } catch (error) {
+      console.error(error.message);
+      throw error;
+    }
+  }
+
+  // DELETE-WISHLIST
+  async removeWishlist(idProduct: string, email: string, res: Response) {
+    const idProductConvert = new Types.ObjectId(idProduct);
+    const user = await this.userModel.findOne({ email }).exec();
+    console.log(user,"remove")
+    if (!user) {
+      return res.status(404).json({ msg: 'Not Found User' });
+    }
+    const index = user.wishlist.indexOf(idProductConvert);
+    if (index !== -1) {
+      user.wishlist.splice(index, 1);
+      await user.save();
+      return res.status(200).json({ msg: 'delete success!', user });
+    } else {
+      return res.status(500).json({ msg: 'delete product wishlist fail!' });
+    }
   }
 }

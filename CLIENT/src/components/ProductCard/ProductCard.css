@@ -85,3 +85,12 @@
   height: 350px;
 }
 
+.custom-decoration-1 {
+  border: 1px solid #e7e4e4 !important;
+  box-shadow: 0 10px 10px rgba(97, 95, 95, 0.4) !important;
+  transition: 0.1s linear;
+}
+
+.custom-decoration-1:hover {
+  transform: translateY(-5px) !important;
+}

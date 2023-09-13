@@ -4,18 +4,20 @@ import { Link, useLocation } from "react-router-dom";
 import { ProductCardProps, Product } from "../../types/type";
 import productAPI from "../../api/product.api"; // Thêm dòng này để import productAPI
 import "./ProductCard.css";
-
+import { useSelector } from "react-redux";
 
 const ProductCard: React.FC<ProductCardProps> = (props) => {
   const location = useLocation();
   const { grid } = props;
   const [products, setProducts] = useState<Product[]>([]);
-
+  const selectorSorted = useSelector((state: any) => state.sortBy);
+  const selectorSortedByCategory = useSelector((state: any) => state.sortByCategory);
+  console.log(selectorSortedByCategory,"sort by category")
   useEffect(() => {
     // Gọi API và lấy dữ liệu từ server
     const fetchProducts = async () => {
       try {
-        const response = await productAPI.getAllProducts();
+        const response = await productAPI.getAllProducts(selectorSorted,selectorSortedByCategory);
 
         setProducts(response.data);
       } catch (error) {
@@ -23,20 +25,20 @@ const ProductCard: React.FC<ProductCardProps> = (props) => {
       }
     };
     fetchProducts();
-  }, []);
+  }, [selectorSorted,selectorSortedByCategory]);
 
   return (
     <>
       {products?.map((product) => (
         <div
           className={`${
-            location.pathname === "/store" ? `gr-${grid}` : "col-3"
+            location.pathname === "/store" ? `gr-${grid}` : "col-4"
           }`}
           key={product._id}
         >
           <Link
             to={`/product/${product._id}`}
-            className="product-card position-relative custom-decoration"
+            className="product-card position-relative custom-decoration custom-decoration-1 "
           >
             <div className="product-image">
               <img
@@ -62,7 +64,7 @@ const ProductCard: React.FC<ProductCardProps> = (props) => {
               </p>
               <p className="price">{product.price} $</p>
             </div>
-            <div className="action-bar position-absolute">
+            {/* <div className="action-bar position-absolute">
               <div className="d-flex flex-column gap-15">
                 <Link to="/">
                   <img src="images/prodcompare.svg" alt="addcart" />
@@ -74,7 +76,7 @@ const ProductCard: React.FC<ProductCardProps> = (props) => {
                   <img src="images/add-cart.svg" alt="addcart" />
                 </Link>
               </div>
-            </div>
+            </div> */}
           </Link>
         </div>
       ))}

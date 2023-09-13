@@ -1,0 +1,145 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.wrapper-dashboard {
+  margin-left: 300px;
+}
+
+.content-chart {
+  width: 100%;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.user-dashboard-content {
+  margin-left: 20px;
+}
+
+.content-chart h2 {
+  margin: 10px 19px;
+}
+
+/* Dashboard.css */
+
+/* Lớp cho cột bên trái */
+.content-chart-left {
+  flex: 1;
+  margin-right: 20px; /* Khoảng cách bên phải giữa cột và các biểu đồ */
+}
+
+.dashboard-box {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    padding-left: 20px;
+    gap: 15px;
+}
+
+/* Lớp cho phần tử bên trong cột */
+.dashboard-comment {
+    background-color: #3366CC;
+    min-height: 150px;
+    width: 320px;
+    color: #fff;
+    border-radius: 3px;
+}
+.dashboard-total-payment {
+    border: 1px solid #ccc;
+    background-color: #DC3911;
+    width: 320px;
+    color: #fff;
+}
+.dashboard-user-register {
+  background-color: #FF9900;
+  border: 1px solid #ccc;
+  width: 320px;
+  color: #fff;
+}
+
+.dashboard-comment {
+    position: relative;
+}
+
+.dashboard-comment h4 {
+    padding-left: 5px;
+}
+
+.icons-dashboard {
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    font-size: 23px;
+}
+
+.text-content-dashboard {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+}
+
+.text-content-dashboard span {
+    font-size: 23px;
+}
+
+.dashboard-total-payment {
+    position: relative;
+}
+
+.dashboard-total-payment h4 {
+    padding-left: 5px;
+}
+
+.icons-payment {
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    font-size: 23px;
+}
+
+.text-content-payment {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+}
+
+.text-content-payment span {
+    font-size: 23px;
+}
+
+/*  */
+.dashboard-user-register {
+    position: relative;
+}
+
+.dashboard-user-register h4 {
+    padding-left: 5px;
+}
+
+.icons-users {
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    font-size: 23px;
+}
+
+.text-content-users {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+}
+
+.text-content-users span {
+    font-size: 23px;
+}

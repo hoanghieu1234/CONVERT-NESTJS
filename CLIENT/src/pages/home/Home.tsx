@@ -322,9 +322,6 @@ const Home: React.FC = () => {
           </div>
           <div className="row">
             <ProductCard grid={1}/>
-            <ProductCard grid={1}/>
-            <ProductCard grid={1}/>
-            <ProductCard grid={1}/>
           </div>
         </div>
       </section>

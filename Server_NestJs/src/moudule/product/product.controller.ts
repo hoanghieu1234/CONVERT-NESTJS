@@ -11,6 +11,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Res,
   UploadedFiles,
   UseInterceptors,
@@ -21,8 +22,13 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
   @Get('get-all')
-  async getAllProducts(): Promise<Product[]> {
-    return this.productService.getAllProducts();
+  async getAllProducts(
+    @Query('_sort') query: any = '',@Query('_categories') sortByCategory: any = ''
+  ): Promise<Product[]> {
+    console.log(query);
+    console.log(sortByCategory);
+    
+    return this.productService.getAllProducts(query ,sortByCategory);
   }
   @Get('get-by-id/:id')
   async getProductById(@Param('id') id: string, @Res() res: Response) {
@@ -34,7 +40,6 @@ export class ProductController {
     FileFieldsInterceptor([{ name: 'image', maxCount: 1 }], multerUpload),
   )
   async createProduct(@UploadedFiles() file: any, @Body() body: ProductDto) {
-
     if (file.image) {
       body.image = file.image[0].path;
     }
@@ -52,7 +57,7 @@ export class ProductController {
     @Body() body: any,
     @Param('id') id: string,
   ) {
-    console.log("body", body)
+    console.log('body', body);
     if (file.image) {
       body.image = file.image[0].path;
     }
@@ -65,4 +70,8 @@ export class ProductController {
   ): Promise<void> {
     await this.productService.deleteProduct(id, res);
   }
+  // @Get('sorted-by-price')
+  // async getSortedByPrice(@Res() res:Response,@Query("_sort") query: string = "") {
+  //   return this.productService.getSortedByPrice(res,query);
+  // }
 }

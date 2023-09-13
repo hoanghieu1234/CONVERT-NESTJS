@@ -107,4 +107,34 @@ export class UserController {
   async refreshToken(@Req() req: Request, @Res() res: Response) {
     await this.userService.refreshToken(req, res);
   }
+  @Patch('/change-profile/:id')
+  async changeProfile(@Res() res: Response, @Body() body, @Param('id') param) {
+    console.log(body, 123);
+    console.log(param, 'pârm');
+    return await this.userService.changeProfile(res, body, param);
+  }
+  @Post('/add-wishlist/:productId')
+  async addWishlist(
+    @Param('productId') productId: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const { user }: any = req;
+    console.log('user', user);
+    return await this.userService.addWishlist(productId, user.email, res);
+  }
+  @Get('get-wishlist/:idUser')
+  async getWishlist(@Param() idUser: string, @Res() res: Response) {
+    return await this.userService.getWishlist(idUser, res);
+  }
+  @Delete('remove-wishlist/:idProduct')
+  async removeWishlist(
+    @Param('idProduct') idProduct: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    ) {
+    console.log(req)
+    const { user }: any = req;
+    return await this.userService.removeWishlist(idProduct,user.email,res);
+  }
 }

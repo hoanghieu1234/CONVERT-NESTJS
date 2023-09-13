@@ -5,7 +5,6 @@ import { PaymentItem } from "../../types/type";
 import "./index.css";
 const OrderManager: React.FC = () => {
   const [payment, setPayment] = useState<PaymentItem[]>([]);
-  // console.log(123, payment);
 
   useEffect(() => {
     // Gọi API để lấy dữ liệu
@@ -42,26 +41,25 @@ const OrderManager: React.FC = () => {
             </thead>
             <tbody>
               {payment?.map((item, index) => (
-                <tr key={item._id}>
+                <tr key={item?._id}>
                   <td>{index + 1}</td>
-                  <td>{item.idUser.lastname}</td>
-                  <td>{item.idUser.mobile}</td>
-                  <td>{item.idUser.email}</td>
-                  <td>{item.total}</td>
+                  <td>{item?.idUser?.lastname}</td>
+                  <td>{item?.idUser?.mobile}</td>
+                  <td>{item?.idUser?.email}</td>
+                  <td>{item?.total}</td>
                   <td>
                     {item?.listProduct.map((pro) => {
-                      return pro.idProduct.category;
+                      return pro?.idProduct?.category;
                     })}
                   </td>
                   <td>
-                    {item?.listProduct.map((pro) => {
-                      return pro.idProduct.createdAt;
+                    {item?.listProduct?.map((pro) => {
+                      return pro?.idProduct?.createdAt;
                     })}
                   </td>
                   <td>
-                    {" "}
-                    {item.listProduct.map((pro) => {
-                      return pro.idProduct.price;
+                    {item?.listProduct?.map((pro) => {
+                      return pro?.idProduct?.price;
                     })}
                     $
                   </td>

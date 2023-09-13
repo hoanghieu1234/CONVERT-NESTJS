@@ -1,15 +1,32 @@
 // import React, { useEffect, useState } from "react";
 import BreadCrumb from "../../components/BreadCrumb/BreadCrumb";
 import Meta from "../../components/Meta/Meta";
-import ReactStars from 'react-rating-star-with-type'
+import ReactStars from "react-rating-star-with-type";
 import ProductCard from "../../components/ProductCard/ProductCard";
 import "./OutStore.css";
 import Color from "../../components/color/color";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { sortByProduct } from "../../redux/reduce/sorfByProduct";
+import { sortByCategory } from "../../redux/reduce/sortByCategory";
 
 const OurStore: React.FC = () => {
-  const [grid, setGrid] = useState(4);
+  const [sortOption, setSortOption] = useState("");
+  const [category, setCategory] = useState("");
+  const [tags, setTags] = useState("");
+  const dispatch = useDispatch();
 
+  console.log(category,"setCategory")
+  const handleSortChange = (event: any) => {
+    const selectedOption = event.target.value;
+    setSortOption(selectedOption);
+    if (selectedOption !== "") {
+      dispatch(sortByProduct(selectedOption));
+    }
+  };
+
+  // DISPATCH CATEGORY
+  dispatch(sortByCategory(category));
   return (
     <>
       <Meta title={"Our Store"} />
@@ -21,11 +38,45 @@ const OurStore: React.FC = () => {
               <div className="filter-card mb-3">
                 <h3 className="filter-title">Shop By Categories</h3>
                 <div>
-                  <ul className="ps-0">
-                    <li>Watch</li>
-                    <li>Tv</li>
-                    <li>Camera</li>
-                    <li>Laptop</li>
+                  <ul className="ps-0 category-filter">
+                    <li
+                      className={category == "mobile" ? "active-catalog" : ""}
+                      onClick={() => {
+                        category === "mobile"
+                          ? setCategory("")
+                          : setCategory("mobile");
+                      }}
+                    >
+                      Mobile
+                    </li>
+                    <li
+                      className={category == "Tv" ? "active-catalog" : ""}
+                      onClick={() => {
+                        category === "Tv" ? setCategory("") : setCategory("Tv");
+                      }}
+                    >
+                      Tv
+                    </li>
+                    <li
+                      className={category == "camera" ? "active-catalog" : ""}
+                      onClick={() => {
+                        category === "camera"
+                          ? setCategory("")
+                          : setCategory("camera");
+                      }}
+                    >
+                      Camera
+                    </li>
+                    <li
+                      className={category == "Laptop" ? "active-catalog" : ""}
+                      onClick={() => {
+                        category === "Laptop"
+                          ? setCategory("")
+                          : setCategory("Laptop");
+                      }}
+                    >
+                      Laptop
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -124,16 +175,54 @@ const OurStore: React.FC = () => {
                 <h3 className="filter-title">Product Tags</h3>
                 <div>
                   <div className="product-tags d-flex flex-wrap align-items-center gap-10">
-                    <span className="badge bg-light text-secondary rounded-3 py-2 px-3">
+                    <span
+                      className={
+                        tags == "headphone"
+                          ? "badge bg-light text-secondary rounded-3 py-2 px-3 active-tags"
+                          : "badge bg-light text-secondary rounded-3 py-2 px-3"
+                      }
+                      onClick={() => {
+                        tags == "headphone"
+                          ? setTags("")
+                          : setTags("headphone");
+                      }}
+                    >
                       Headphone
                     </span>
-                    <span className="badge bg-light text-secondary rounded-3 py-2 px-3">
+                    <span
+                      className={
+                        tags == "Mobile"
+                          ? "badge bg-light text-secondary rounded-3 py-2 px-3 active-tags"
+                          : "badge bg-light text-secondary rounded-3 py-2 px-3"
+                      }
+                      onClick={() => {
+                        tags == "Mobile" ? setTags("") : setTags("Mobile");
+                      }}
+                    >
                       Mobile
                     </span>
-                    <span className="badge bg-light text-secondary rounded-3 py-2 px-3">
+                    <span
+                      className={
+                        tags == "Laptop"
+                          ? "badge bg-light text-secondary rounded-3 py-2 px-3 active-tags"
+                          : "badge bg-light text-secondary rounded-3 py-2 px-3"
+                      }
+                      onClick={() => {
+                        tags == "Laptop" ? setTags("") : setTags("Laptop");
+                      }}
+                    >
                       Laptop
                     </span>
-                    <span className="badge bg-light text-secondary rounded-3 py-2 px-3">
+                    <span
+                      className={
+                        tags == "Wire"
+                          ? "badge bg-light text-secondary rounded-3 py-2 px-3 active-tags"
+                          : "badge bg-light text-secondary rounded-3 py-2 px-3"
+                      }
+                      onClick={() => {
+                        tags == "Wire" ? setTags("") : setTags("Wire");
+                      }}
+                    >
                       Wire
                     </span>
                   </div>
@@ -198,29 +287,18 @@ const OurStore: React.FC = () => {
                     <p className="mb-0 d-block" style={{ width: "100px" }}>
                       Soft By:
                     </p>
-                    <select name="" className="form-control form-select" id="">
-                      <option value="manual">Featured</option>
-                      <option value="best-selling" selected>
-                        Best Selling
-                      </option>
-                      <option value="title-ascending">
-                        Alphabetically,A-Z
-                      </option>
-                      <option value="title-descending">
-                        Alphabetically,Z-A
-                      </option>
-                      <option value="price-ascending">
-                        Price, low to high
-                      </option>
-                      <option value="price-descending">
-                        Price, high to low
-                      </option>
-                      <option value="created-ascending">
-                        Date, old to new
-                      </option>
-                      <option value="created-descending">
-                        Date, new to old
-                      </option>
+                    <select
+                      name=""
+                      className="form-control form-select"
+                      id=""
+                      value={sortOption}
+                      onChange={handleSortChange}
+                    >
+                      <option value="">Featured</option>
+
+                      <option value="title">Sort By Name</option>
+                      <option value="price">Sort By Price</option>
+                      <option value="createdAt">Sort By Date</option>
                     </select>
                   </div>
                   <div className="d-flex align-items-center gap-10">
@@ -230,41 +308,29 @@ const OurStore: React.FC = () => {
                         src="images/gr4.svg"
                         className="d-block img-fluid"
                         alt="grid"
-                        onClick={() => {
-                          setGrid(3);
-                        }}
                       />
                       <img
                         src="images/gr3.svg"
                         className="d-block img-fluid"
                         alt="grid"
-                        onClick={() => {
-                          setGrid(4);
-                        }}
                       />
                       <img
                         src="images/gr2.svg"
                         className="d-block img-fluid"
                         alt="grid"
-                        onClick={() => {
-                          setGrid(6);
-                        }}
                       />
                       <img
                         src="images/gr.svg"
                         className="d-block img-fluid"
                         alt="grid"
-                        onClick={() => {
-                          setGrid(12);
-                        }}
                       />
                     </div>
                   </div>
                 </div>
               </div>
               <div className="products-list pb-5">
-                <div className="d-flex gap-10 flex-wrap">
-                  <ProductCard grid={grid} />
+                <div className="d-flex flex-wrap">
+                  <ProductCard grid={4} />
                 </div>
               </div>
             </div>

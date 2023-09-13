@@ -11,6 +11,7 @@ export class PaymentController {
     @Res() res: Response,
   ) {
     const savedPayment = await this.paymentService.createPayment(createPaymentDto,res);
+    console.log("createPaymentDto",createPaymentDto)
     return savedPayment
   }
   @Get('get-all')

@@ -4,11 +4,13 @@ import Meta from "../../components/Meta/Meta";
 import { AiFillDelete } from "react-icons/ai";
 import cartAPI from "../../api/cart.api";
 import "./Cart.css";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import PaymentAPI from "../../api/payment.api";
 import { useDispatch } from "react-redux";
 import { updateState } from "../../redux/reduce/updateSlice";
 import ConfirmModal from "../../components/confirm/Confirm";
+import { addCartItems, addSubtotal } from "../../redux/reduce/checkout";
+// import { PayPalButtons } from "@paypal/react-paypal-js";
 
 interface CartItem {
   _id: string;
@@ -25,7 +27,6 @@ interface CartItem {
 const Cart = () => {
   const idUser: any = JSON.parse(localStorage.getItem("userLogin") as string)
     .data?._id;
-  console.log("idUser", idUser);
 
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
@@ -42,15 +43,16 @@ const Cart = () => {
   // GET API CART
   const getCartItems = async (id: string) => {
     const items: any = await cartAPI.getCartItem(id);
-
+    console.log(items,"items")
     if (items.data && Array.isArray(items.data)) {
       const result = items.data.reduce((total: number, item: any) => {
         return total + item.idProduct.price * item.quantity;
       }, 0);
-
-      setSubtotal(result);
+      dispatch(addSubtotal(result));
     }
-    setCartItems(items.data);
+    setCartItems(items.data)
+    
+   
 
     if (items.data && Array.isArray(items.data)) {
       const newSubTotal = items.data.reduce((total: number, item: any) => {
@@ -99,13 +101,11 @@ const Cart = () => {
   const handleDelete = async (id: string) => {
     try {
       const response = await cartAPI.deleteProductInCart(id);
-      console.log(response,123123)
       if (response) {
         setIsUpdate(!isUpdate);
 
         const updatedCartItems = [...cartItems];
         const index = updatedCartItems.findIndex((item) => item._id === id);
-        console.log(index, 123);
 
         if (index == -1) {
           updatedCartItems.splice(index, 1);
@@ -138,31 +138,7 @@ const Cart = () => {
     }
   };
 
-  // call api cart qua checkout
-  const handlePostCheckout = async () => {
-    try {
-      if (cartItems.length > 0) {
-        console.log(cartItems);
-        const paymentData = {
-          idUser: idUser,
-          listProduct: cartItems,
-          total: subTotal,
-        };
-        await PaymentAPI.postCartToPayment(paymentData);
-        await PaymentAPI.deleteCartToPayment(idUser);
-        setIsCheckoutSuccessful(true);
-        setCartItems([]);
-        setSubtotal(0);
-        dispatch(updateState(false as any));
-        // Show payment confirmation
-        setShowPaymentConfirmation(true);
-      }
-    } catch (error) {
-      console.error("Lỗi khi đặt hàng", error);
-    }
-  };
-  console.log("cartItems", cartItems);
-
+ 
   return (
     <>
       {idUser ? (
@@ -179,6 +155,7 @@ const Cart = () => {
                     <h4 className="cart-col-3">QUANTITY</h4>
                     <h4 className="cart-col-4">TOTAL</h4>
                   </div>
+
                   {/* product 1 */}
                   {cartItems?.length > 0 &&
                     cartItems?.map((items) => {
@@ -252,9 +229,38 @@ const Cart = () => {
                       <div className="product-checkout d-flex flex-column align-items-start">
                         <h4>Subtotal: {subTotal.toFixed(2)}$</h4>
                         <p>Taxes and shipping calculated at checkout</p>
-                        <button className="button" onClick={handlePostCheckout}>
+                        <NavLink className="button" to="/checkout" onClick={() =>  dispatch(addCartItems(cartItems))}>
                           Checkout
-                        </button>
+                        </NavLink>
+                        {/* <PayPalButtons
+                          style={{
+                            layout: "horizontal",
+                            height: 48,
+                          }}
+                          createOrder={(data, actions) => {
+                            {
+                              console.log(data);
+                              return actions.order.create({
+                                purchase_units: [
+                                  {
+                                    amount: {
+                                      currency_code: "USD",
+                                      value: `${subTotal
+                                        .toFixed(2)
+                                        .replace(".00", "")}`, // Sử dụng giá trị totalAmount ở đây
+                                    },
+                                    description: `Purchase at ${new Date().toLocaleString()}`,
+                                  },
+                                ],
+                              });
+                            }
+                          }}
+                          onApprove={(_, actions): any => {
+                            return actions.order
+                              ?.capture()
+                              .then(() => handlePostCheckout());
+                          }}
+                        /> */}
                       </div>
                     </div>
                   </div>

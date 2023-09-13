@@ -5,8 +5,7 @@ import ReactStars from "react-stars";
 import "./SingleProduct.css";
 import Color from "../../components/color/color";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { LuGitCompare } from "react-icons/lu";
-import { AiOutlineHeart } from "react-icons/ai";
+import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import productAPI from "../../api/product.api";
 import cartAPI from "../../api/cart.api";
 import { ToastContainer, toast } from "react-toastify";
@@ -16,6 +15,7 @@ import { updateState } from "../../redux/reduce/updateSlice";
 import { useDispatch } from "react-redux";
 import BaseAxios from "../../api/AxiosClient";
 import axios from "axios";
+import userApi from "../../api/user.api";
 
 interface Comment {
   idUser: string;
@@ -34,6 +34,7 @@ const SingleProduct = () => {
   const [isLoading, setIsLoading] = useState(true);
   const idProduct = location.pathname.split("/")[2];
   const idUser = getUserLogin?.data?._id;
+
   const params = useParams();
   // COMMENT START
   const [rating, setRating] = useState<number>(0);
@@ -41,7 +42,8 @@ const SingleProduct = () => {
   const [inputComment, _setInputComment] = useState<string>("");
   const [comment, setCommnet] = useState<Comment[]>([]); // Đảm bảo rằng kiểu Comment[] phù hợp với cấu trúc của dữ liệu từ API trả về
   const [shouldFetchComments, setShouldFetchComments] = useState(true);
-  console.log(comment, 1212);
+  const [isInWishlist, setIsInWishlist] = useState(false);
+
   const handleRatingChange = (value: number) => {
     setRating(value);
   };
@@ -156,7 +158,7 @@ const SingleProduct = () => {
         const response = await axios.get(
           `http://localhost:8080/api/v1/get-comments/${params.id}`
         );
-        console.log("response =====>", response)
+        console.log("response =====>", response);
         setCommnet(response.data);
       } catch (error) {
         console.log("Lỗi khi gọi API" + error);
@@ -164,6 +166,110 @@ const SingleProduct = () => {
     };
     getComment();
   }, [shouldFetchComments]);
+
+  // HANDLE ADD WISHLIST
+  const handleAddWishList = async () => {
+    try {
+      if (!getUserLogin || !getUserLogin.data?.email) {
+        // Kiểm tra nếu người dùng chưa đăng nhập hoặc không có email
+        toast.error("Please log in to add to wishlist", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        setTimeout(() => {
+          navigate("/login");
+        }, 3000);
+        // Chuyển hướng đến trang đăng nhập
+        return;
+      }
+
+      const response = await userApi.addWishList(idProduct);
+      if (response.status === 200) {
+        if (response.data.msg === "delete success") {
+          toast.error("Product deleted from wishlist!!", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          setIsInWishlist(false);
+          // Xoá sản phẩm khỏi danh sách yêu thích
+          let storeWishlist: any = localStorage.getItem("userLogin");
+          storeWishlist = JSON.parse(storeWishlist);
+          let wishList = storeWishlist?.data?.wishlist || [];
+          const updatedWishList = wishList.filter(
+            (item: any) => item !== idProduct
+          );
+          storeWishlist.data.wishlist = updatedWishList;
+          localStorage.setItem("userLogin", JSON.stringify(storeWishlist));
+        } else {
+          toast.success("Product added to wishlist!", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+
+          // Cập nhật lại localStorage
+          let storeWishlist: any = localStorage.getItem("userLogin");
+          storeWishlist = JSON.parse(storeWishlist);
+          let wishList = storeWishlist?.data?.wishlist || [];
+
+          // Kiểm tra xem sản phẩm đã có trong danh sách yêu thích chưa
+          if (!wishList.includes(idProduct)) {
+            wishList.push(idProduct);
+            storeWishlist.data.wishlist = wishList;
+            localStorage.setItem("userLogin", JSON.stringify(storeWishlist));
+          }
+          setIsInWishlist(true);
+        }
+      }
+      console.log(response);
+    } catch (error) {
+      console.error("Error adding/removing product from wishlist:", error);
+    }
+  };
+  // USE_EFFECT WISHT
+  useEffect(() => {
+    // Kiểm tra nếu sản phẩm có trong danh sách yêu thích thì cập nhật trạng thái isInWishlist
+    let storeWishlist: any = localStorage.getItem("userLogin");
+    storeWishlist = JSON.parse(storeWishlist);
+    let wishList = storeWishlist?.data?.wishlist || [];
+
+    if (wishList.includes(idProduct)) {
+      setIsInWishlist(true);
+    }
+  }, [idProduct]);
+
+  useEffect(() => {
+    userApi
+      .getWishList(idUser)
+      .then((res) => {
+        const wishList = res.data;
+        const findWishlist = wishList.find((pro: any) => {
+          return pro._id == idProduct;
+        });
+        if (findWishlist) {
+          setIsInWishlist(true);
+        } else {
+          setIsInWishlist(false);
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching wishlist:", err);
+      });
+  }, []);
   return (
     <>
       {isLoading && <LoadingComponent />}
@@ -265,23 +371,23 @@ const SingleProduct = () => {
                       </Link>
                     </div>
                   </div>
-                  <div className="d-flex align-items-center gap-15">
-                    <div>
-                      <Link to="">
-                        <LuGitCompare className="fs-4 me-2" /> Add to Compare
-                      </Link>
-                    </div>
-                    <div>
-                      <Link to="">
-                        <AiOutlineHeart className="fs-4 me-2" /> Add to Wishlish
-                      </Link>
+                  <div className="d-flex align-items-center gap-15 ">
+                    <div onClick={handleAddWishList} className="wishlist">
+                      {isInWishlist ? (
+                        <AiFillHeart className="fs-4 me-2 text-danger icons-wishlist" />
+                      ) : (
+                        <AiOutlineHeart className="fs-4 me-2 icons-wishlist" />
+                      )}
+                      {isInWishlist
+                        ? "Remove from Wishlist"
+                        : "Add to Wishlist"}
                     </div>
                   </div>
                   <div className="d-flex gap-10 flex-column my-3">
                     <h3 className="product-heading">Shipping & Return</h3>
                     <p className="product-data">
                       Free shipping and returns available on all orders! <br />
-                      We ship all Us domestic orders within{" "}
+                      We ship all Us domestic orders within
                       <b>5-10 business day!</b>
                     </p>
                   </div>

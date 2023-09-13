@@ -30,7 +30,7 @@ export class CommentService {
   }
 
   // get a comment
-  async getComment(idProduct: any, res: any):Promise<Comment[]> {
+  async getComment(idProduct: any, res: any): Promise<Comment[]> {
     const convertIdProduct = new Types.ObjectId(idProduct);
     try {
       const getComment = await this.commentModel
@@ -39,7 +39,18 @@ export class CommentService {
         .exec();
       return res.status(200).json(getComment);
     } catch (error) {
-      return res.status(500).json({msg:'Error Server'},error)
+      return res.status(500).json({ msg: 'Error Server' }, error);
+    }
+  }
+
+  // get all comments
+  async getAllComments(res: any): Promise<Comment[]> {
+    try {
+      const getAll = await this.commentModel.find().exec();
+      return res.status(200).json(getAll);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ msg: 'Error Server' });
     }
   }
 }

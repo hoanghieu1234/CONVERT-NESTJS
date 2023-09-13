@@ -19,7 +19,10 @@ export class UserModule {
       .apply(CheckAuth)
       .forRoutes(
         { path: 'api/v1/users/update/:id', method: RequestMethod.PATCH },
-        { path: 'api/v1//logout', method: RequestMethod.POST },
+        { path: 'api/v1/user/logout', method: RequestMethod.POST },
+        {path:'api/v1/user/add-wishlist/:productId', method: RequestMethod.POST},
+        {path:'api/v1/user/get-wishlist/:idUser', method: RequestMethod.GET},
+        {path:'api/v1/user/remove-wishlist/:idProduct',method: RequestMethod.DELETE}
       );
     // .forRoutes(UserController);
   }

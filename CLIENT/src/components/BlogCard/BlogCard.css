@@ -7,6 +7,13 @@
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
 }
+
+.blog-card {
+  border: 1px solid #e7e4e4 !important;
+  box-shadow: 0 10px 10px rgba(97, 95, 95, 0.4) !important;
+  transition: 0.1s linear;
+}
+
 .blog-content {
   padding: 15px;
 }
@@ -27,5 +34,5 @@
 .blog-content p.desc {
   font-size: 13px;
   line-height: 22px;
-  color: var(--color-777777)
+  color: var(--color-777777);
 }

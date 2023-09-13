@@ -13,7 +13,9 @@ import RequireCart from "../components/RequireCart/RequireCart";
 import RequireAuth from "../components/RequireAuth";
 import ResetPassword from "../pages/ResetPassword/ResetPassword";
 import ForgotPassword from "../pages/ForgotPassword/ForgotPassword";
-
+import Profile from "../pages/Profile/Profile";
+import Checkout from "../pages/Checkout/Checkout";
+import WishList from "../pages/WishList/WishList";
 
 const Router: React.FC = () => {
   //nếu như mà có người dùng thì show giỏ hàng còn không show ra trang liên quan tới hãy đăng nhập để xem giỏ hàng
@@ -43,6 +45,16 @@ const Router: React.FC = () => {
           </User>
         }
       />
+      <Route element={<RequireAuth />}>
+        <Route
+          path="/profile"
+          element={
+            <User>
+              <Profile />
+            </User>
+          }
+        />
+      </Route>
       <Route
         path="/product"
         element={
@@ -88,15 +100,17 @@ const Router: React.FC = () => {
       </Route>
 
       {/* </Route> */}
+      <Route element={<RequireAuth />}>
+        <Route
+          path="/checkout"
+          element={
+            <User>
+              <Checkout />
+            </User>
+          }
+        />
+      </Route>
 
-      {/* <Route
-            path="/checkout"
-            element={
-              <User>
-                <Checkout />
-              </User>
-            }
-          /> */}
       {/* <Route
             path="/compare-product"
             element={
@@ -105,14 +119,17 @@ const Router: React.FC = () => {
               </User>
             }
           /> */}
-      {/* <Route
-            path="/wishlist"
-            element={
-              <User>
-                <WishList />
-              </User>
-            }
-          /> */}
+      <Route element={<RequireAuth />}>
+        <Route
+          path="/wishlist"
+          element={
+            <User>
+              <WishList />
+            </User>
+          }
+        />
+      </Route>
+
       <Route
         path="/login"
         element={
@@ -122,13 +139,13 @@ const Router: React.FC = () => {
         }
       />
       <Route
-            path="/forgot-password/:token"
-            element={
-              <User>
-                <ResetPassword />
-              </User>
-            }
-          />
+        path="/forgot-password/:token"
+        element={
+          <User>
+            <ResetPassword />
+          </User>
+        }
+      />
       <Route
         path="/sign-up"
         element={
@@ -138,13 +155,13 @@ const Router: React.FC = () => {
         }
       />
       <Route
-            path="/reset-password"
-            element={
-              <User>
-                <ForgotPassword />
-              </User>
-            }
-          />
+        path="/reset-password"
+        element={
+          <User>
+            <ForgotPassword />
+          </User>
+        }
+      />
       {/* <Route
             path="/privacy-policy"
             element={

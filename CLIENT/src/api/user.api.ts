@@ -14,6 +14,18 @@ class userApi {
     const url = "api/v1/user/logout";
     return axiosClient.post(url);
   }
+  static addWishList(idProduct: string) {
+    const url = `api/v1/user/add-wishlist/${idProduct}`;
+    return axiosClient.post(url);
+  }
+  static getWishList(idUser: string) {
+    const url = `api/v1/user/get-wishlist/${idUser}`;
+    return axiosClient.get(url);
+  }
+  static deleteWishList(idProduct: string) {
+    const url = `api/v1/user/remove-wishlist/${idProduct}`;
+    return axiosClient.delete(url);
+  }
 }
 
 export default userApi;

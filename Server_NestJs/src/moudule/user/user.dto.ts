@@ -1,36 +1,18 @@
-import {
-  IsBoolean,
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-  Length,
-  Matches,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+
 import { Types } from 'mongoose';
 
 export class UserDTO {
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(2)
-  @MaxLength(50)
+  
   firstname: string;
 
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(2)
-  @MaxLength(50)
+ 
   lastname: string;
 
-  @IsNotEmpty()
-  @IsEmail()
+  
   email: string;
 
-  @IsNotEmpty()
   mobile: string;
 
-  @IsNotEmpty()
   password: string;
 
   role: string;

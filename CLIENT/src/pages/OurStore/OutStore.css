@@ -66,3 +66,21 @@
   border-radius: 3px;
   cursor: pointer;
 }
+
+.active-catalog {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.category-filter {
+  user-select: none;
+}
+
+.active-tags {
+  background-color: #9c9797 !important;
+  color: rgb(233, 212, 212) !important;
+}
+
+.product-tags * {
+  cursor: pointer;
+}

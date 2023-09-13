@@ -15,13 +15,13 @@ export class PaymentService {
 
   async createPayment(createPaymentDto: CreatePaymentDto, res: any) {
     const { idUser, listProduct, total } = createPaymentDto;
-
+    console.log("createPaymentDto",createPaymentDto.total)
     try {
-      const newPayment = new this.paymentModel({
+      const newPayment = await new this.paymentModel({
         idUser,
         listProduct,
         total,
-      });
+      }).populate("idUser");
       const savePayment = await newPayment.save();
       return res.status(200).json(savePayment);
     } catch (error) {

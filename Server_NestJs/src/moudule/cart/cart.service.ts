@@ -46,7 +46,7 @@ export class CartService {
       return res.status(500).json({ error: 'Đã xảy ra lỗi' });
     }
   }
-  async getCartItems(idUser, res: Response) {
+  async getCartItems(idUser:string, res: Response) {
     const idUserConvertObjectId = new Types.ObjectId(idUser);
     try {
       const cartItems = await this.cartModel

@@ -8,6 +8,7 @@ import OrderManager from "../components/OrderManager";
 import ProductManager from "../components/ProductManager";
 import UserManager from "../components/UserManager";
 import RequireAuth from "../components/RequireAuth/RequireAuth";
+import DashBoard from "../components/DashBoard/DashBoard";
 
 const Router: React.FC = () => {
   return (
@@ -43,6 +44,14 @@ const Router: React.FC = () => {
           element={
             <DefaultLayout>
               <OrderManager />
+            </DefaultLayout>
+          }
+        />
+         <Route
+          path="/dashboard"
+          element={
+            <DefaultLayout>
+              <DashBoard />
             </DefaultLayout>
           }
         />

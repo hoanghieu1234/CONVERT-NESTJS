@@ -15,7 +15,10 @@ export class CommentController {
   }
   @Get('get-comments/:id')
   async getComment(@Param() idProduct: string, @Res() res: Response) {
-    console.log(idProduct,"idProduct")
     return await this.commentService.getComment(idProduct, res);
+  }
+  @Get('get-all-comment')
+  async getAllComments(@Res() res: Response) {
+    return await this.commentService.getAllComments(res);
   }
 }

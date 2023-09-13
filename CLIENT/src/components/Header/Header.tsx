@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { NavLink, Link, useNavigate } from "react-router-dom";
+import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 import { BsSearch } from "react-icons/bs";
 import { AiOutlineLogout } from "react-icons/ai";
-import { IoMdGitCompare } from 'react-icons/io';
+import { IoMdGitCompare } from "react-icons/io";
 import { AiFillHeart } from "react-icons/ai";
 import { BsFillCartCheckFill } from "react-icons/bs";
 import { FaUser } from "react-icons/fa";
@@ -22,14 +22,15 @@ interface CartItem {
   quantity: number;
 }
 const Header: React.FC = () => {
+  const location = useLocation();
   const [logOut, setLogOut] = useState(false);
   const navigate = useNavigate();
-  const isUpdate = useSelector((state: { update: string }) => state.update);
+  const isUpdate = useSelector((state: { update: boolean }) => state.update);
   const getUserLocal = JSON.parse(localStorage.getItem("userLogin") as string);
   const quantityRef = React.useRef<number>(0);
-
+  const path = useLocation().pathname;
   const handleLogOut = () => {
-    quantityRef.current = 0
+    quantityRef.current = 0;
     setLogOut(false);
     navigate("/login");
   };
@@ -44,6 +45,12 @@ const Header: React.FC = () => {
   };
 
   useEffect(() => {
+    if (path === `/login`) {
+      quantityRef.current = 0;
+    }
+  }, []);
+
+  useEffect(() => {
     checkAccessToken();
   }, [getAccessToken]);
 
@@ -54,23 +61,20 @@ const Header: React.FC = () => {
   const getCartItems = async (id: string) => {
     const response = await getCartItem.getCartItem(id);
     const items: CartItem[] | any = response.data;
+    console.log(items, 1212121);
     if (items.msg === "Giỏ hàng trống") {
       console.log("đã vào đây 11");
-      setCartItems([]);
-      return (quantityRef.current = 0);
     }
-
-    quantityRef.current = items.reduce((total: any, product: any) => {
-      return (total = total + product.quantity);
-    }, 0);
     setCartItems(items);
+    return items;
   };
 
   useEffect(() => {
-
     idUser = JSON.parse(localStorage.getItem("userLogin") as string)?.data._id;
     if (idUser) {
-      getCartItems(idUser);
+      getCartItems(idUser).then(
+        (items) => (quantityRef.current = items.length)
+      );
     } else {
       quantityRef.current = 0;
     }
@@ -87,9 +91,9 @@ const Header: React.FC = () => {
               </p>
             </div>
             <div className="col-2">
-              <p className="text-end text-white mb-0">
+              <p className="text-end text-white mb-0 d-flex gap-10">
                 Hotline:
-                <NavLink className="text-white" to="tel:+840899548260">
+                <NavLink className="text-white header-phone" to="tel:+840899548260">
                   +84: 0899548260
                 </NavLink>
               </p>
@@ -128,7 +132,7 @@ const Header: React.FC = () => {
                     to="/compare-product"
                     className="d-flex align-items-center gap text-white custom-decoration"
                   >
-                    <IoMdGitCompare className = "custom-icon"/>
+                    <IoMdGitCompare className="custom-icon" />
                     <p className="mb-0 ">
                       Compare <br /> Product
                     </p>
@@ -139,7 +143,7 @@ const Header: React.FC = () => {
                     to="/wishlist"
                     className="d-flex align-items-center gap text-white custom-decoration"
                   >
-                    <AiFillHeart className = "custom-icon"/>
+                    <AiFillHeart className="custom-icon" />
                     <p className="mb-0 ">
                       Favourite <br /> Wishlist
                     </p>
@@ -150,7 +154,7 @@ const Header: React.FC = () => {
                     to="/cart"
                     className="d-flex align-items-center gap-10 text-white "
                   >
-                    <BsFillCartCheckFill className = "custom-icon"/>
+                    <BsFillCartCheckFill className="custom-icon" />
                     <div className="d-flex flex-column gap-10">
                       <span className="badge bg-white text-dark">
                         {quantityRef.current}
@@ -160,15 +164,13 @@ const Header: React.FC = () => {
                   </Link>
                 </div>
                 {!logOut ? (
-                  <div>
+                  <div className="d-flex align-items-center">
                     <Link
                       to="/login"
                       className="d-flex align-items-center gap text-white custom-decoration"
                     >
-                      <FaUser className = "custom-icon"/>
-                      <p className="mb-0 ">
-                        Login <br /> My Account
-                      </p>
+                      <FaUser className="custom-icon" />
+                      <p className="mb-0">Login</p>
                     </Link>
                   </div>
                 ) : (
@@ -228,19 +230,62 @@ const Header: React.FC = () => {
                   </div>
                 </div>
                 <div className="menu-links">
-                  <div className="d-flex align-items-center gap-15">
-                    <NavLink className="text-white" to="/">
+                  <div className="d-flex align-items-center gap-30">
+                    <NavLink
+                      className={
+                        location.pathname == "/"
+                          ? "text-white active-nav"
+                          : "text-white"
+                      }
+                      to="/"
+                    >
                       Home
                     </NavLink>
-                    <NavLink className="text-white" to="/product">
+                    <NavLink
+                      className={
+                        location.pathname == "/product"
+                          ? "text-white active-nav"
+                          : "text-white"
+                      }
+                      to="/product"
+                    >
                       Our Store
                     </NavLink>
-                    <NavLink className="text-white" to="/blogs">
+                    <NavLink
+                      className={
+                        location.pathname == "/blogs"
+                          ? "text-white active-nav"
+                          : "text-white"
+                      }
+                      to="/blogs"
+                    >
                       Blogs
                     </NavLink>
-                    <NavLink className="text-white" to="/contact">
+                    <NavLink
+                      className={
+                        location.pathname == "/contact"
+                          ? "text-white active-nav"
+                          : "text-white"
+                      }
+                      to="/contact"
+                    >
                       Contact
                     </NavLink>
+                    {logOut ? (
+                      <NavLink
+                        className={
+                          location.pathname == "/profile"
+                            ? "text-white active-nav"
+                            : "text-white"
+                        }
+                        to="/profile"
+                      >
+                        Profile
+                      </NavLink>
+                    ) : (
+                      // Ẩn NavLink khi người dùng chưa đăng nhập
+                      <></>
+                    )}
                   </div>
                 </div>
               </div>

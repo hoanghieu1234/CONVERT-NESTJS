@@ -37,6 +37,9 @@ const Sidebar: React.FC = () => {
           <li className={local.pathname === "/order" ? "active" : ""}>
             <Link to="/order">Order Manager</Link>
           </li>
+          <li className={local.pathname === "/dashboard" ? "active" : ""}>
+            <Link to="/dashboard">Dashboard Manager</Link>
+          </li>
         </ul>
       </div>
       <SlLogout
